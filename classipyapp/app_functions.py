@@ -36,8 +36,7 @@ def processing_feedback(status):
 #@st.cache - add cache before function to prevent computation on every rerun
 def convert_df(transformed_df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    transformed_csv = transformed_df.to_csv().encode('utf-8')
-    return transformed_csv
+    return transformed_df.to_csv().encode('utf-8')
 
 
 #2. Create Download button

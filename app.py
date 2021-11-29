@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
-import time
-from classipyapp.app_functions import display_transformation_options
+from classipyapp.app_functions import convert_df, display_transformation_options, download_button
 
 st.set_page_config(
     page_title="Quick reference",  # => Quick reference - Streamlit
@@ -17,8 +16,8 @@ st.markdown('''
 uploaded_file = st.file_uploader("Upload your csv file",
                                  type=["csv", "json"],
                                  accept_multiple_files=False)
-
-pd.DataFrame(uploaded_file)
+if uploaded_file is not None:
+    uploaded_df = pd.read_csv(uploaded_file)
 
 #Request user to select output
 st.write('Select an action:')
@@ -42,12 +41,16 @@ else:
     st.write('Please select an action')
 
 
+#column_names = ['Column1','Column2']
+#categorical_transformation =  ['OneHotEncoder','LabelEncoder']
+#numerical_transformation = ['StandardScaling','MinMaxValue']
 
-column_names = ['Column1','Column2']
-categorical_transformation =  ['OneHotEncoder','LabelEncoder']
-numerical_transformation = ['StandardScaling','MinMaxValue']
+#display_transformation_options(column_names, 'Categorical',
+#                               categorical_transformation)
+#display_transformation_options(column_names, 'Numerical',
+#                               numerical_transformation)
 
-display_transformation_options(column_names, 'Categorical',
-                               categorical_transformation)
-display_transformation_options(column_names, 'Numerical',
-                               numerical_transformation)
+try:
+    download_button(uploaded_df)
+except:
+    pass
