@@ -34,4 +34,4 @@ termcolor
 
 #webapp
 streamlit
-classipy
+git+https://github.com/mareksherman/classipy.git
