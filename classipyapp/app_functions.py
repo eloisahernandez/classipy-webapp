@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 from pandas.io import json
 from classipy import DataFrameTransformer
+import json
 
 
 #Display summary
@@ -17,17 +18,15 @@ def summary(df):
 def api_post_call(df):
     r = requests.post(
         'https://classipy-s6bveudxoq-ew.a.run.app/summary_predict',
-        df.to_json())
-    label_pred = pd.Series(r)
-    st.write(r)
-    st.write(f"Status Code: {r.status_code}, Response: {r.json()}")
+        df.to_json()).json()
+    api_r_dict = json.loads(r)
+    #column_names = list(api_r_dict['column_names'].values())
+    label_pred = list(api_r_dict['y_preds_decoded'].values())
     return label_pred
 
 def transform_data(df, file_name):
     #Get and transform dataset
     transformed_df = DataFrameTransformer(dataset_name=file_name).fit_transform(df)
-    #Send request to API to get predictions
-    #y_pred = api_post_call(transformed_df)
     #Get column names
     column_names = transformed_df['column_name'].to_list()
     return transformed_df, column_names
@@ -37,14 +36,12 @@ def transform_data(df, file_name):
 def display_transformation_options(column_names, pred_labels):
     st.markdown(f'''#### Column Type Prediction''')
     st.write("➖" * 35)
-    #transformation_num = ['MinMaxScaler', 'StandardScaler']
-    #tranformation_cat = ['OneHotEncoder', 'LabelEncoder']
     column_types = [
         'cat-binary', 'cat-multi', 'date', 'float', 'int', 'text', 'other'
     ]
     with st.expander("Expand"):
         transformation_dict = {}
-        columns_width = [1, 3, 2, 2, 2]
+        columns_width = [1, 3, 2, 2, 3]
         st.markdown(f'''###### *Review Type and Select Transformation*''')
         col1, col2, col3, col4, col5 = st.columns(columns_width)
         col1.write('**Include**')

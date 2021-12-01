@@ -29,17 +29,19 @@ selection = st.radio('Select an action:', (option_1,option_2))
 
 submit_button = st.button('Submit')
 
-column_names = []
-labels = pd.Series(
-    ['other', 'other', 'cat-multi', 'cat-multi', 'float', 'date']).to_list()
+#column_names = []
+#labels = pd.Series(
+#    ['other', 'other', 'cat-multi', 'cat-multi', 'float', 'date']).to_list()
 
 
 if (submit_button and (selection == option_1) and uploaded_file is not None) or 'postsubmit' in st.session_state:
     st.session_state['postsubmit'] = True
     st.markdown('''### Summary''')
     transformed_df, column_names = transform_data(uploaded_df, file_name)
+    labels = api_post_call(transformed_df)
     summary(uploaded_df)
     transf_dict = display_transformation_options(column_names, labels)
+    st.write(transf_dict)
 elif (submit_button and uploaded_file is None):
     st.warning('Please upload a file')
 elif submit_button and (selection == option_2):
