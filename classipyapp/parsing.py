@@ -45,7 +45,10 @@ class Parsing ():
                         for row in df[column_name].iteritems():
                             matches = re.findall(int_pattern, str(row[1]))
                             m = "".join(matches).strip()
-                            int_column.append(int(m))
+                            try:
+                                int_column.append(int(m))
+                            except:
+                                int_column.append(0)
                         df_parsed[column_name] = int_column
                     except:
                         df_error[column_name] = df[column_name]
@@ -58,7 +61,10 @@ class Parsing ():
                         for row in df[column_name].iteritems():
                             matches = re.findall(float_pattern, str(row[1]))
                             m = "".join(matches).strip()
-                            float_column.append(float(m))
+                            try:
+                                float_column.append(float(m))
+                            except:
+                                float_column.append(0)
                         df_parsed[column_name] = float_column
                 except:
                         df_error[column_name] = df[column_name]
@@ -107,15 +113,16 @@ class Parsing ():
             transf_names_list = [
                 col_name.rpartition('__')[2] for col_name in transf_columns_names]
             df_transformed_pre = preprocessor.transform(df)
-            df_transformed = pd.DataFrame(df_transformed_pre, columns=transf_names_list)
+            df_transformed = pd.DataFrame(df_transformed_pre)
         else:
             df_transformed_pre = preprocessor.transform(df)
-            df_transformed = pd.DataFrame(df_transformed_pre,columns=df.columns)
+            df_transformed = pd.DataFrame(df_transformed_pre)
         return df_transformed
 
-    def parse_and_transform(self):
-        df_parsed,df_error = parse_type.parse_data(df)
-        df_trasnf = parse_type.scaler_encoder(df_parsed)
+    def parse_and_transform(self,df):
+        df_parsed,df_error = self.parse_data(df)
+        print(df_parsed)
+        df_trasnf = self.scaler_encoder(df_parsed)
         if df_error.empty:
            return df_trasnf,'Done'
         return pd.concat([df_trasnf, df_error], axis=1), f'Parse error in columns {df_error.columns}'    
@@ -135,8 +142,8 @@ if __name__ == '__main__':
     date =['12/08/2012', '12 Aug 2022', '12/08/22','20-08-12','12-08-2021']
     int_num =[1,2000,346980,481464,654654]
     float_num =[13654.543,3546645.454,54654654.88,64655432.54654,6544453213.654521]
-    int_num_str =['1','2000','346980','481464654654','64654']
-    float_num_str =['13654.543','3546645.454','54654654.88','64655432.54654','6544453213.654521']
+    int_num_str =['1','2000','b','481464654654','64654']
+    float_num_str =['13654.543','asd','54654654.88','64655432.54654','6544453213.654521']
     bin_cat =[True,False,False,True,True]
     bin_cat_str =['Yes','No','No','Yes','Yes']
     multi_cat_str =['gdgd','adsdas','dfsfdfsdf','Ysfdfss','Yesdafbhdfgs']
@@ -151,4 +158,4 @@ if __name__ == '__main__':
                         'bin_cat_str' : bin_cat_str,
                         'multi_cat_str':multi_cat_str})
     parse_type = Parsing(predictions)
-    print(parse_type.parse_and_transform())
+    print(parse_type.parse_and_transform(df))
