@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 from pandas.io import json
+from classipy import DataFrameTransformer
 
 
 #Display summary
@@ -21,6 +22,15 @@ def api_post_call(df):
     st.write(r)
     st.write(f"Status Code: {r.status_code}, Response: {r.json()}")
     return label_pred
+
+def transform_data(df, file_name):
+    #Get and transform dataset
+    transformed_df = DataFrameTransformer(dataset_name=file_name).fit_transform(df)
+    #Send request to API to get predictions
+    #y_pred = api_post_call(transformed_df)
+    #Get column names
+    column_names = transformed_df['column_name'].to_list()
+    return transformed_df, column_names
 
 #Takes a list of column names, type and transformations available and returns
 # dictionary with column name as key and a tuple of columns to include and transformation
@@ -55,13 +65,11 @@ def display_transformation_options(column_names, pred_labels):
                     """,
                 unsafe_allow_html=True,)
             transformation = col5.selectbox(" ",
-                                            suggest_transformation(label),
+                                            suggest_transformation(col_type),
                                             key=name)
             transformation_dict[name] = (to_include,col_type,transformation)
     return transformation_dict
 
-
-@st.cache
 def suggest_transformation(label):
     if label in ['float','int']:
         transformation_list = ['MinMaxScaler', 'StandardScaler', 'RobustScaler']

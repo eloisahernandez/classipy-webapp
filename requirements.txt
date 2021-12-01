@@ -34,3 +34,4 @@ termcolor
 
 #webapp
 streamlit
+classipy
