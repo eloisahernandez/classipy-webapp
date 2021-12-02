@@ -63,7 +63,7 @@ transform_button = st.button('Transform')
 if transform_button:
     parse_type = Parsing(transf_dict)
     transformed_df, status = parse_type.parse_and_transform(uploaded_df)
-    st.write(status)
+    st.success(status)
 
 try:
     download_button(transformed_df)
