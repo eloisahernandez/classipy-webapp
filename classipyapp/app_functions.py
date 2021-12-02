@@ -8,19 +8,21 @@ import json
 
 #Display summary
 def summary(df):
-    st.write('Summary was called')
+    st.markdown('''### Summary''')
+    st.write("➖" * 35)
     with st.expander("Expand", expanded=True):
         col1,col2,col3 = st.columns(3)
         col1.metric('Columns', len(df.columns))
         col2.metric('Rows', len(df))
         col3.metric('','')
 
+
 def api_post_call(df):
     r = requests.post(
         'https://classipy-s6bveudxoq-ew.a.run.app/summary_predict',
         df.to_json()).json()
     api_r_dict = json.loads(r)
-    #column_names = list(api_r_dict['column_names'].values())
+    #column_names = list(api_r_dict['column_names'].values()) -- using column names directly from df
     label_pred = list(api_r_dict['y_preds_decoded'].values())
     return label_pred
 
@@ -75,16 +77,6 @@ def suggest_transformation(label):
     elif label in ['date', 'text', 'other']:
         transformation_list = [' ']
     return transformation_list
-
-
-#Temporarily displays a message while executing a block of code
-def processing_feedback(status):
-    '''Displays message while code executes'''
-    with st.spinner('Wait for it...'):
-        status = 'Done'
-    st.success('Done!')
-    pass
-
 
 #Allow user to download output as csv:
 # 1. Convert df to csv
