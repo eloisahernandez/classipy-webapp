@@ -36,7 +36,7 @@ def transform_data(df, file_name):
 #Takes a list of column names, type and transformations available and returns
 # dictionary with column name as key and a tuple of columns to include and transformation
 def display_transformation_options(column_names, pred_labels):
-    st.markdown(f'''#### Column Type Prediction''')
+    st.markdown(f'''### Column Type Prediction''')
     st.write("➖" * 35)
     column_types = [
         'cat-binary', 'cat-multi', 'date', 'float', 'int', 'text', 'other'
@@ -73,7 +73,7 @@ def suggest_transformation(label):
     if label in ['float','int']:
         transformation_list = ['MinMaxScaler', 'StandardScaler', 'RobustScaler']
     elif label in ['cat-multi','cat-binary']:
-        transformation_list = ['LabelEncoder', 'OneHotEncoder', 'OrdinalEncoder']
+        transformation_list = ['OneHotEncoder', 'OrdinalEncoder']
     elif label in ['date', 'text', 'other']:
         transformation_list = [' ']
     return transformation_list

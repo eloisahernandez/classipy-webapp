@@ -10,7 +10,7 @@ st.set_page_config(
     layout="centered",  # wide,centered
     initial_sidebar_state="auto")  # collapsed
 
-st.markdown('''### Classipy: Coming Soon 🔜''')
+st.markdown('''## Classipy''')
 
 uploaded_file = st.file_uploader("Upload your csv file",
                                  type=["csv"],
@@ -31,8 +31,7 @@ selection = st.radio('Select an action:', (option_1,option_2))
 
 submit_button = st.button('Submit')
 
-
-#column_names = []
+#Harcoded labels to test.
 #labels = pd.Series(
 #    ['other', 'other', 'cat-multi', 'cat-multi', 'float', 'date']).to_list()
 
