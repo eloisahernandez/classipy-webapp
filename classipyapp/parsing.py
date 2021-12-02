@@ -93,6 +93,7 @@ class Parsing ():
         user_dict = self.get_user_input()
         user_type_scale = user_dict['transform']
         scaler_list = []
+        col_name_list = []
         for scaler, cols in user_type_scale.items():
             if scaler == 'StandardScaler':
                 scaler_list.append((StandardScaler(),cols))
@@ -100,12 +101,16 @@ class Parsing ():
                 scaler_list.append((MinMaxScaler(),cols))
             elif scaler == 'RobustScaler':
                 scaler_list.append((RobustScaler(),cols))
-            elif scaler == 'LabelEncoder':
-                scaler_list.append((LabelEncoder(),cols))
             elif scaler == 'OneHotEncoder':
                 scaler_list.append((OneHotEncoder(handle_unknown='ignore', sparse=False),cols))
             elif scaler == 'OrdinalEncoder':
                 scaler_list.append((OrdinalEncoder(),cols))
+
+        [col_name_list.extend(col_name[1]) for col_name in scaler_list]
+        for col_name in df.columns:
+            if col_name not in col_name_list:
+                col_name_list.append(col_name)
+        print(col_name_list)
         preprocessor = make_column_transformer(*scaler_list, remainder='passthrough')
         preprocessor.fit(df)
         if ('LabelEncoder' or 'OneHotEncoder' or 'OrdinalEncoder') in user_type_scale:
@@ -113,10 +118,10 @@ class Parsing ():
             transf_names_list = [
                 col_name.rpartition('__')[2] for col_name in transf_columns_names]
             df_transformed_pre = preprocessor.transform(df)
-            df_transformed = pd.DataFrame(df_transformed_pre)
+            df_transformed = pd.DataFrame(df_transformed_pre, columns=transf_names_list)
         else:
             df_transformed_pre = preprocessor.transform(df)
-            df_transformed = pd.DataFrame(df_transformed_pre)
+            df_transformed = pd.DataFrame(df_transformed_pre,columns=col_name_list)
         return df_transformed
 
     def parse_and_transform(self,df):
@@ -125,6 +130,7 @@ class Parsing ():
         df_trasnf = self.scaler_encoder(df_parsed)
         if df_error.empty:
            return df_trasnf,'Done'
+        print(df_error)
         return pd.concat([df_trasnf, df_error], axis=1), f'Parse error in columns {df_error.columns}'    
 
 if __name__ == '__main__':
