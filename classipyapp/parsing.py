@@ -11,17 +11,30 @@ class Parsing ():
         pass
 
     def get_user_input(self):
+
+        ''' Get the dictionary from the app with the options from the user. 
+        Separate the columns that we should keep, the columns to parse by type, 
+        and the columns that should be scaled.'''
+
         cols_dict = {}
         cols_transf = {}
         cols_type = {}
+        
         for name, item in self.user_input_dict.items():
+            #Test if the user wants to keep the column.
             if item[0]:
+
+                #Separate the colums between diferent scales
                 if item[2] not in cols_transf:        
                     cols_transf[item[2]] = []
-                cols_transf[item[2]].append(name)   
+                cols_transf[item[2]].append(name)
+
+                #Separate the colums between diferent types 
                 if item[1] not in cols_type:
                     cols_type[item[1]] = []          
                 cols_type[item[1]].append(name)
+
+        #Generate the dictionary with type and scale together
         cols_dict['transform'] = cols_transf
         cols_dict['type'] = cols_type
         cols_dict 
@@ -30,14 +43,24 @@ class Parsing ():
 
 
     def parse_data(self,df):
+        '''Parse the columns by type, transform integers, date, 
+        and integers into actual data type by regex pattern.'''
 
+        #Select dictionary type
         user_dict = self.get_user_input()
         user_type_transf = user_dict['type']
+        
+        #Regex patterns
         int_pattern = re.compile('\d*')
         float_pattern = re.compile('\d*[.]\d*')
         df_error = pd.DataFrame()
         df_parsed = pd.DataFrame()
+
+        #Iterate over the types in the dictionary 
+
         for key_name in user_type_transf: 
+
+            #Test if the type is an integer
             if 'int' in key_name:
                 for column_name in user_type_transf['int']:
                     try:
@@ -45,6 +68,8 @@ class Parsing ():
                         for row in df[column_name].iteritems():
                             matches = re.findall(int_pattern, str(row[1]))
                             m = "".join(matches).strip()
+                             #If it is an integer, it tries to convert each row on the DataFrame to an actual integer. 
+                             #If it fails, it will attribute 0 to the row.
                             try:
                                 int_column.append(int(m))
                             except:
@@ -53,7 +78,7 @@ class Parsing ():
                     except:
                         df_error[column_name] = df[column_name]
 
-
+            #Test if the type is an float
             elif 'float' in key_name:
                 try:
                     for column_name in user_type_transf['float']:
@@ -61,6 +86,8 @@ class Parsing ():
                         for row in df[column_name].iteritems():
                             matches = re.findall(float_pattern, str(row[1]))
                             m = "".join(matches).strip()
+                            #If it is an float, it tries to convert each row on the DataFrame to an actual float. 
+                            #If it fails, it will attribute 0 to the row.
                             try:
                                 float_column.append(float(m))
                             except:
@@ -69,7 +96,7 @@ class Parsing ():
                 except:
                         df_error[column_name] = df[column_name]
 
-
+            #Test if the type is a date
             elif 'date' in key_name:
                 try:
                     for column_name in user_type_transf['date']:
@@ -81,7 +108,8 @@ class Parsing ():
                         df_parsed[column_name] = date_column
                 except:
                         df_error[column_name] = df[column_name]
-
+            #For the other types like text and categorical binary 
+            # the columns  continues the same
             else:
                 for column_name in user_type_transf[key_name]:
                         date_column = []
@@ -113,7 +141,7 @@ class Parsing ():
         print(col_name_list)
         preprocessor = make_column_transformer(*scaler_list, remainder='passthrough')
         preprocessor.fit(df)
-        if ('LabelEncoder' or 'OneHotEncoder' or 'OrdinalEncoder') in user_type_scale:
+        if 'OneHotEncoder' in user_type_scale:
             transf_columns_names = preprocessor.get_feature_names_out()
             transf_names_list = [
                 col_name.rpartition('__')[2] for col_name in transf_columns_names]
