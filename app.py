@@ -39,13 +39,13 @@ submit_button = st.button('Submit')
 
 if (submit_button and (selection == option_1) and uploaded_file is not None) or 'postsubmit' in st.session_state:
     st.session_state['postsubmit'] = True
-    st.markdown('''### Summary''')
     summary(uploaded_df)
     transformed_df, column_names = transform_data(uploaded_df, file_name)
-    if 'labels' not in st.session_state:
-        st.session_state['labels'] = api_post_call(transformed_df)
-    labels = st.session_state['labels']
-    transf_dict = display_transformation_options(column_names,labels)
+    with st.spinner('Wait for it...'):
+        if 'labels' not in st.session_state:
+            st.session_state['labels'] = api_post_call(transformed_df)
+        labels = st.session_state['labels']
+        transf_dict = display_transformation_options(column_names,labels)
 elif (submit_button and uploaded_file is None):
     st.warning('Please upload a file')
 elif submit_button and (selection == option_2):
@@ -63,9 +63,5 @@ transform_button = st.button('Transform')
 if transform_button:
     parse_type = Parsing(transf_dict)
     transformed_df, status = parse_type.parse_and_transform(uploaded_df)
-    st.success(status)
-
-try:
+    st.success('You can now download your transformed data')
     download_button(transformed_df)
-except:
-    pass
