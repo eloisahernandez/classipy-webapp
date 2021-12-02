@@ -8,6 +8,7 @@ import json
 
 #Display summary
 def summary(df):
+    '''Displays dataset summary'''
     st.markdown('''### Summary''')
     st.write("➖" * 35)
     with st.expander("Expand", expanded=True):
@@ -18,6 +19,7 @@ def summary(df):
 
 
 def api_post_call(df):
+    '''calls api to return label predictions'''
     r = requests.post(
         'https://classipy-s6bveudxoq-ew.a.run.app/summary_predict',
         df.to_json()).json()
@@ -33,15 +35,16 @@ def transform_data(df, file_name):
     column_names = transformed_df['column_name'].to_list()
     return transformed_df, column_names
 
-#Takes a list of column names, type and transformations available and returns
-# dictionary with column name as key and a tuple of columns to include and transformation
+
 def display_transformation_options(column_names, pred_labels):
+    '''Takes a list of column names, type and transformations available and returns
+    dictionary with column name as key and a tuple of columns to include and transformation'''
     st.markdown(f'''### Column Type Prediction''')
     st.write("➖" * 35)
     column_types = [
         'cat-binary', 'cat-multi', 'date', 'float', 'int', 'text', 'other'
     ]
-    with st.expander("Expand"):
+    with st.expander("Expand", expanded=True):
         transformation_dict = {}
         columns_width = [1, 3, 2, 2, 3]
         st.markdown(f'''###### *Review Type and Select Transformation*''')
@@ -69,7 +72,10 @@ def display_transformation_options(column_names, pred_labels):
             transformation_dict[name] = (to_include,col_type,transformation)
     return transformation_dict
 
+
 def suggest_transformation(label):
+    '''Takes a list of transformations and returns them based on predicted
+    labels or user input'''
     if label in ['float','int']:
         transformation_list = ['MinMaxScaler', 'StandardScaler', 'RobustScaler']
     elif label in ['cat-multi','cat-binary']:
@@ -86,8 +92,9 @@ def convert_df(transformed_df):
     return transformed_df.to_csv().encode('utf-8')
 
 
-#2. Create Download button
+
 def download_button(transformed_csv):
+    '''Create Download button and download file as csv'''
     st.download_button(
         label="Download data as CSV",
         data=convert_df(transformed_csv),
