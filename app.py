@@ -19,6 +19,8 @@ uploaded_file = st.file_uploader("Upload your csv file",
 if uploaded_file is not None:
     uploaded_df = pd.read_csv(uploaded_file)
     file_name = uploaded_file.name.split('.csv')[0]
+    with st.expander("Preview"):
+        st.dataframe(uploaded_df.head())
 else:
     uploaded_df = None
 
@@ -55,4 +57,6 @@ if transform_button:
     parse_type = Parsing(transf_dict)
     transformed_df, status = parse_type.parse_and_transform(uploaded_df)
     st.success('You can now download your transformed data')
+    with st.expander("Preview"):
+        st.dataframe(transformed_df.head())
     download_button(transformed_df)
