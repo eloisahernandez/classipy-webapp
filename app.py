@@ -31,19 +31,20 @@ selection = st.radio('Select an action:', (option_1,option_2))
 submit_button = st.button('Submit')
 
 #Harcoded labels to test.
-#labels = pd.Series(
-#    ['other', 'other', 'cat-multi', 'cat-multi', 'float', 'date']).to_list()
+
+labels = pd.Series(['int','cat-multi','text','float','float','cat-multi','date','int','int','cat-binary','int','text']).to_list()
 
 #Once submit button is clicked, return different options depending on user input
 if (submit_button and (selection == option_1) and uploaded_file is not None) or 'postsubmit' in st.session_state:
     st.session_state['postsubmit'] = True
     summary(uploaded_df)
     transformed_df, column_names = transform_data(uploaded_df, file_name)
-    with st.spinner('Wait for it...'):
-        if 'labels' not in st.session_state:
-            st.session_state['labels'] = api_post_call(transformed_df)
-        labels = st.session_state['labels']
-        transf_dict = display_transformation_options(column_names,labels)
+    ### Hard coding labels for demo
+    #with st.spinner('Wait for it...'):
+    #    if 'labels' not in st.session_state:
+    #        st.session_state['labels'] = api_post_call(transformed_df)
+    #    labels = st.session_state['labels']
+    transf_dict = display_transformation_options(column_names,labels)
 elif (submit_button and uploaded_file is None):
     st.warning('Please upload a file')
 elif submit_button and (selection == option_2):
